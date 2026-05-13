@@ -168,6 +168,27 @@
       }
     },
     {
+      "name": "bandsintown",
+      "category": "media-and-entertainment",
+      "api": "Bandsintown",
+      "description": "Turn Bandsintown's two read-only endpoints into a tour-routing brain: local cache, calendar-gap detection, lineup...",
+      "path": "library/media-and-entertainment/bandsintown",
+      "printer": "4.5.2",
+      "printer_name": "printing-press",
+      "mcp": {
+        "binary": "bandsintown-pp-mcp",
+        "transports": [
+          "stdio"
+        ],
+        "tool_count": 2,
+        "public_tool_count": 2,
+        "auth_type": "api_key",
+        "env_vars": [],
+        "mcp_ready": "full",
+        "spec_format": "openapi3"
+      }
+    },
+    {
       "name": "beehiiv",
       "category": "marketing",
       "api": "Beehiiv",
