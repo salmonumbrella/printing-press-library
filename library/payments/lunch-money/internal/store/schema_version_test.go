@@ -7,6 +7,7 @@ import (
 	"context"
 	"database/sql"
 	"errors"
+	"os"
 	"path/filepath"
 	"sync"
 	"testing"
@@ -33,6 +34,41 @@ func TestSchemaVersion_StampedOnFreshDB(t *testing.T) {
 	}
 	if v != StoreSchemaVersion {
 		t.Fatalf("fresh db version = %d, want %d", v, StoreSchemaVersion)
+	}
+}
+
+// PATCH: Cover owner-only permissions for local SQLite store artifacts.
+func TestOpenCreatesOwnerOnlyStoreFiles(t *testing.T) {
+	dbDir := filepath.Join(t.TempDir(), "store")
+	dbPath := filepath.Join(dbDir, "data.db")
+	s, err := Open(dbPath)
+	if err != nil {
+		t.Fatalf("open fresh db: %v", err)
+	}
+	if err := s.Close(); err != nil {
+		t.Fatalf("close store: %v", err)
+	}
+
+	assertOwnerOnlyPath(t, dbDir)
+	assertOwnerOnlyPath(t, dbPath)
+	for _, suffix := range []string{"-wal", "-shm"} {
+		path := dbPath + suffix
+		if _, err := os.Stat(path); err == nil {
+			assertOwnerOnlyPath(t, path)
+		} else if !os.IsNotExist(err) {
+			t.Fatalf("stat %s: %v", path, err)
+		}
+	}
+}
+
+func assertOwnerOnlyPath(t *testing.T, path string) {
+	t.Helper()
+	info, err := os.Stat(path)
+	if err != nil {
+		t.Fatalf("stat %s: %v", path, err)
+	}
+	if got := info.Mode().Perm(); got&0o077 != 0 {
+		t.Fatalf("%s mode = %#o, want no group/other permissions", path, got)
 	}
 }
 

@@ -183,6 +183,16 @@
         "internal/cli/transcendence_helpers.go"
       ],
       "validated_outcome": "go test ./internal/client and go test ./internal/cli pass for cache permission and retag split-child coverage."
+    },
+    {
+      "id": "private-sqlite-store-permissions",
+      "summary": "Created local SQLite store directories and files with owner-only permissions.",
+      "reason": "The local SQLite store contains synced financial data and should not be readable or traversable by other local users.",
+      "files": [
+        "internal/store/store.go",
+        "internal/store/schema_version_test.go"
+      ],
+      "validated_outcome": "go test ./internal/store passes, including store directory and database artifact permission coverage."
     }
   ]
 }
